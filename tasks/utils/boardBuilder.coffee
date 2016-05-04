@@ -1,6 +1,9 @@
 pcbStackup  = require('pcb-stackup')
 whatsThatGerber = require('whats-that-gerber')
 gerberToSvg = require('gerber-to-svg')
+shortId = require('shortid')
+
+console.log(shortId)
 
 # board colors
 options =
@@ -82,25 +85,26 @@ colorToStyle =
 convert = (files, color = 'green') ->
     layers = []
     for {filename, data} in files
-        layerType = whatsThatGerber(filename)
-        if layerType != 'drw' #drw is the default for any un-identifiable filenames
+        {id, name} = whatsThatGerber(filename)
+        if id != 'drw' #drw is the default for any un-identifiable filenames
             try
-                svgObj = gerberToSvg data,
+                svgObj = gerberToSvg data, filename,
+                    id: shortId.generate()
                     object: true
-                    drill: (layerType == 'drl')
+                    drill: (id == 'drl')
                     warnArr: []
             catch e
                 try
-                    if layerType == 'drl'
+                    if id == 'drl'
                         throw e
-                    svgObj = gerberToSvg(data, {object: true, drill: true, warnArr: []})
+                    svgObj = gerberToSvg(data, filename, {id:shortId.generate(), object: true, drill: true, warnArr: []})
                 catch
-                    console.warn "could not parse #{filename} as #{layerType} because
+                    console.warn "could not parse #{filename} as #{id} because
                                 #{e.message}"
                     continue
-                layerType = 'drl'
-            layers.push({type: layerType, svg: svgObj})
-    stackup = pcbStackup(layers)
+                id = 'drl'
+            layers.push({type: id, svg: svgObj})
+    stackup = pcbStackup(layers. shortId.generate())
     stackup.top.svg._.push(styleToSvgObj(colorToStyle[color]))
     stackup.bottom.svg._.push(styleToSvgObj(colorToStyle[color]))
     return stackup
