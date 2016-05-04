@@ -1,5 +1,4 @@
 const React       = require('react');
-const ReactDOM    = require('react-dom');
 const BoardThumb  = require('./board_thumb');
 
 const style = {
@@ -10,7 +9,7 @@ const style = {
       marginTop:32,
       marginBottom: 32,
       display:(show ? 'inherit' : 'none')
-    }
+    };
   },
 
   intro: {
@@ -18,11 +17,15 @@ const style = {
     padding: 20,
     borderRadius: 5,
     textAlign:'left',
-    maxWidth:700
-  }
-}
+    maxWidth:700,
+  },
+};
 
 var BoardList = React.createClass({
+  propTypes: {
+    searching: React.PropTypes.bool,
+    data: React.PropTypes.array,
+  },
   render: function () {
     var initialLoad = !(this.props.searching);
     if (this.props.data.length === 0) {
