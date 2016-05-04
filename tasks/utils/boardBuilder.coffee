@@ -1,5 +1,5 @@
 pcbStackup  = require('pcb-stackup')
-idLayer     = require('pcb-stackup/lib/layer-types').identify
+whatsThatGerber = require('whats-that-gerber')
 gerberToSvg = require('gerber-to-svg')
 
 # board colors
@@ -82,7 +82,7 @@ colorToStyle =
 convert = (files, color = 'green') ->
     layers = []
     for {filename, data} in files
-        layerType = idLayer(filename)
+        layerType = whatsThatGerber(filename)
         if layerType != 'drw' #drw is the default for any un-identifiable filenames
             try
                 svgObj = gerberToSvg data,
